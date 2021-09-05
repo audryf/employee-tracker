@@ -30,24 +30,36 @@ const promptUser = () => {
     ])
     .then(userSelect => {
         switch (userSelect.action) {
-            case 'View All Departments': viewDepts()
-            break;
+            case 'View All Departments': 
+                viewDepts();
+                break;
+            case 'View All Roles':
+                viewRoles()
+                break;
         }
     })
+    
 }
 
 // view all departments
     // formatted table with deparment names and department ids
 const viewDepts = () => {
-    const sql = `SELECT * FROM departments`;
+    const sql = `SELECT * FROM departments;`;
     db.query(sql, (err, res) => {
        if (err) throw err;
        console.table('All Departments', res)
-    });
-};
+    })   
+}
 
 // view all roles
     // formatted table with job titles, role id, the department that the role belongs to, and salary for that role
+    const viewRoles = () => {
+        const sql = `SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles JOIN departments ON departments.id = roles.department_id;`;
+        db.query(sql, (err, res) => {
+            if (err) throw err;
+            console.table('All Roles', res)
+        });
+    };
 
 // view all employees
     // formatted table showing employee ids, first names, last names, job titles, departments, salaries, and managers that employee reports to
