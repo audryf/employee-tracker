@@ -95,7 +95,7 @@ const viewEmployees = () => {
 // add a department
 // prompt to enter name of department 
 // department is added to database
-const addDept = async () => {
+const addDept = () => {
     inquirer
         .prompt([
             {
@@ -117,7 +117,7 @@ const addDept = async () => {
             //     console.table(res);
             // })
         });
-        promptUser(); // WHY does it keep showing up all jumbled...before the input prompt and the table.. also shows up a second time after hitting arrow keys
+    promptUser(); // WHY does it keep showing up all jumbled...before the input prompt and the table.. also shows up a second time after hitting arrow keys
     // promptUser();
 }
 
@@ -169,6 +169,61 @@ const addRole = () => {
 // add an employee
 // prompt to enter first name, last name, role, and manager
 // employee is added to database 
+const addEmployee = () => {
+    db.query(`SELECT * FROM roles`, (err, res) => {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'role',
+                    choices: function () {
+                        let choiceArr = [];
+                        res.forEach(res => choiceArr.push(res.title))
+                        return choiceArr;
+                    },
+                    message: "What is this employee's role?"
+                },
+                {
+                    type: 'input',
+                    name: 'firstName',
+                    message: "What is this employee's first name?"
+                },
+                {
+                    type: 'input',
+                    name: 'lastName',
+                    message: "What is this employee's last name?"
+                },
+                {
+                    type: 'input',
+                    name: 'managerId',
+                    message: `What is this employee's manager's id number?`
+                }
+            ])
+            .then(employeeInfo => {
+                db.query(`SELECT * FROM roles`, (err, res) => {
+                    if (err) throw err;
+                    for (let i = 0; i < res.length; i++) {
+                        if (res.title === employeeInfo.role) {
+                            
+                            return true;
+                        }
+                    }
+                    
+                    return res.json;
+                })
+            
+                const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);`;
+                const params = [employeeInfo.firstName, employeeInfo.lastName, res.id, employeeInfo.managerId];
+                db.query(sql, params, (err, res) => {
+                    if (err) throw err;
+                    console.table(res)
+                })
+            })
+                
+            
+    })
+}
 
 // update an employee role
 // prompt to selet an employee to update
